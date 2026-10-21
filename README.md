@@ -24,6 +24,7 @@ BookDex lets you track every book you've read, are reading, or plan to read — 
 - 🗂️ Filter by status — Reading, Completed, Plan to Read, On Hold, Dropped
 - 🔍 Search by title, author, or genre
 - 🔃 Sort by date added, rating, pages, or title
+- 🔗 Share a private, read-only library link that can be revoked at any time
 - 📈 Statistics — status breakdown, genre chart, rating distribution
 - ✨ Smooth page transitions and animated progress bars
 - 📱 Fully responsive — works on mobile and desktop
@@ -80,11 +81,14 @@ bookdex-vercel/
 │   ├── _auth.js          # JWT verify middleware
 │   ├── signup.js         # POST /api/signup
 │   ├── login.js          # POST /api/login
+│   ├── share.js          # GET + POST + DELETE /api/share
+│   ├── shared.js         # GET /api/shared (public read-only view data)
 │   └── books/
 │       ├── index.js      # GET + POST /api/books
 │       └── [id].js       # PUT + DELETE /api/books/:id
 ├── public/
-│   └── index.html        # Full frontend (single page app)
+│   ├── index.html        # Full frontend (single page app)
+│   └── share.html        # Public read-only shared library
 ├── vercel.json
 ├── package.json
 └── .gitignore
@@ -102,6 +106,10 @@ bookdex-vercel/
 | POST | `/api/books` | Add a book | Yes |
 | PUT | `/api/books/:id` | Update a book | Yes |
 | DELETE | `/api/books/:id` | Delete a book | Yes |
+| GET | `/api/share` | Get your current share link token | Yes |
+| POST | `/api/share` | Create a share link | Yes |
+| DELETE | `/api/share` | Revoke your share link | Yes |
+| GET | `/api/shared?t=<token>` | Get books for a valid shared link | No |
 
 ---
 
@@ -141,7 +149,8 @@ create table users (
   id serial primary key,
   name text,
   email text unique,
-  password text
+  password text,
+  share_token text unique
 );
 
 create table books (
@@ -154,6 +163,14 @@ create table books (
   "coverUrl" text, user_id integer
 );
 ```
+
+If your Supabase project already has the `users` table, run this migration once in the SQL Editor before deploying:
+
+```sql
+alter table users add column share_token text unique;
+```
+
+Owners can create a link from the **Share** button in the library. Anyone with the link can view shared books, ratings, descriptions, and notes; they cannot edit the library. **Stop sharing** immediately revokes the link. Use your main site domain when sharing so viewers are not prompted to sign in to Vercel.
 
 ---
 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>BookDex — Shared Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{font-family:"DM Sans",system-ui,sans-serif;color:#1a2e1c;background:#f0fbf3;line-height:1.6;--green:#347928;--mint:#c0eba6;--text2:#3d5e40;--text3:#7a9e7d}
+body{min-height:100vh}
+.blobs{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;width:50vw;height:50vw;border-radius:50%;filter:blur(80px);opacity:.16;background:#42f57b}
+.blob:first-child{top:-18%;left:-15%}.blob:nth-child(2){right:-15%;bottom:-16%;background:#fccd2a}
+.wrap{position:relative;max-width:1180px;margin:auto;padding:40px 24px 56px}
+.hero{display:flex;align-items:center;gap:18px;margin-bottom:30px}
+.logo{width:58px;height:58px;border-radius:20px;background:linear-gradient(135deg,#42f57b,var(--green));display:grid;place-items:center;font-size:28px;box-shadow:8px 8px 20px #34792830}
+h1,h2,h3,.stat b,.book-title{font-family:Nunito,sans-serif}
+h1{font-size:clamp(28px,5vw,42px);font-weight:900;line-height:1.1}
+.hero p{color:var(--text2);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:15px;margin-bottom:26px}
+.stat,.card{background:#ffffffd9;border:1px solid #fff;border-radius:26px;box-shadow:10px 10px 25px #34792812,-8px -8px 22px #ffffffc9}
+.stat{padding:18px 21px}.stat span{display:block;color:var(--text3);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}.stat b{display:block;color:var(--green);font-size:32px;line-height:1.25}
+.controls{display:grid;gap:13px;margin-bottom:14px}
+#q{width:100%;padding:13px 17px;border:0;border-radius:18px;background:#fff;box-shadow:inset 4px 4px 10px #34792818;font-family:inherit;font-size:15px;font-weight:500;color:inherit;outline-color:#42b35a}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:0;border-radius:18px;padding:8px 14px;background:#fff;color:var(--text2);font:800 13px Nunito,sans-serif;cursor:pointer}
+.chip.on{background:var(--green);color:white}
+.count{margin:10px 3px 16px;color:var(--text2);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:19px}
+.card{overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);box-shadow:12px 14px 28px #34792820}
+.card:focus-visible,.chip:focus-visible,.close:focus-visible{outline:3px solid #347928;outline-offset:3px}
+.cover{position:relative;aspect-ratio:2/3;background:#dff5e6;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.placeholder{height:100%;display:grid;align-content:center;justify-items:center;gap:8px;padding:18px;text-align:center;color:white;background:linear-gradient(145deg,#347928,#42b35a)}
+.placeholder b{font:800 15px Nunito,sans-serif}
+.badge{position:absolute;top:10px;left:10px;border-radius:20px;padding:4px 10px;background:#fff1ba;color:#785b00;font:800 10px Nunito,sans-serif;text-transform:uppercase;letter-spacing:.4px}
+.badge.completed{background:#c0eba6;color:#1f5a14}.badge.hold,.badge.dropped{background:#ffe3e3;color:#9c3737}
+.info{padding:13px 15px 15px}.book-title{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.author{color:var(--text2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress{height:6px;border-radius:8px;background:#34792820;margin:11px 0 4px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,#42f57b,var(--green))}
+.progress-label{display:flex;justify-content:space-between;color:var(--text3);font-size:11px;font-weight:700}
+.meta{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:12px;font-weight:700}
+.genre{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:15px;background:#c0eba6;color:var(--green);padding:3px 9px}
+.rating{color:#b8860b;white-space:nowrap}
+.empty,.state{grid-column:1/-1;text-align:center;padding:64px 16px;color:var(--text2)}
+footer{text-align:center;margin-top:40px;color:var(--text3);font-size:13px;font-weight:700}
+.overlay{position:fixed;inset:0;z-index:5;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:28px 16px;background:#1a2e1c66;backdrop-filter:blur(6px)}
+.modal{position:relative;width:100%;max-width:680px;overflow:hidden;border-radius:30px;background:#fffffffa;box-shadow:0 22px 55px #1a2e1c33}
+.close{position:absolute;z-index:1;right:14px;top:14px;width:38px;height:38px;border:0;border-radius:13px;background:var(--mint);color:var(--green);font-size:18px;font-weight:800;cursor:pointer}
+.modal-head{display:flex;gap:23px;padding:28px;border-bottom:1px solid #34792818}
+.modal-cover{width:132px;flex-shrink:0;aspect-ratio:2/3;overflow:hidden;border-radius:17px;background:#dff5e6}
+.modal-cover img{width:100%;height:100%;object-fit:cover}
+.modal-content{min-width:0;padding:4px 35px 0 0}
+.modal-content h2{font-size:25px;line-height:1.2}.modal-content .author{margin-top:4px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}
+.facts span{display:block;color:var(--text3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}.facts b{font-size:13px}
+.modal-body{padding:24px 28px 30px}.section{margin-bottom:20px}.section:last-child{margin-bottom:0}
+.section h3{margin-bottom:8px;color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.8px}
+.notes{padding:14px 16px;border-radius:17px;background:#c0eba640;color:var(--text2);white-space:pre-line;font-style:italic}
+.stars{color:#fccd2a;font-size:20px;letter-spacing:1px}.stars .off{color:#34792824}
+.description{color:var(--text2);white-space:pre-line}
+@media(max-width:600px){.wrap{padding:24px 15px 40px}.grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.modal-head{flex-direction:column;align-items:center;text-align:center;padding:25px 20px}.modal-content{padding:0}.facts{text-align:left}.modal-body{padding:21px}.modal-cover{width:118px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div></div>
+<main class="wrap" id="root"><div class="state">Loading shared library…</div></main>
+<script>
+const STATUSES=["Reading","Completed","Plan to Read","On Hold","Dropped"];
+let books=[],owner="",filter="All",query="";
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+const safeUrl=value=>/^https?:\/\//i.test(value||"")?value:"";
+const progress=book=>book.pages?Math.min(100,Math.round((Number(book.currentPage)||0)/Number(book.pages)*100)):0;
+const number=value=>Number(value||0).toLocaleString();
+
+async function init(){
+  const token=new URLSearchParams(location.search).get("t");
+  if(!token)return showError("No share link found");
+  try{
+    const response=await fetch("/api/shared?t="+encodeURIComponent(token));
+    const data=await response.json();
+    if(!response.ok)return showError(data.error||"Could not load this library");
+    owner=data.owner||"BookDex user";
+    books=Array.isArray(data.books)?data.books:[];
+    document.title=owner+"'s Library — BookDex";
+    renderShell();
+  }catch{
+    showError("Network error. Please try again.");
+  }
+}
+
+function showError(message){
+  document.getElementById("root").innerHTML=`<div class="state"><div style="font-size:52px">🔒</div><h2>${escapeHtml(message)}</h2><p>Ask the owner for a current link.</p></div>`;
+}
+
+function renderShell(){
+  const completed=books.filter(book=>book.status==="Completed");
+  const rated=books.filter(book=>Number(book.rating)>0);
+  const average=rated.length?(rated.reduce((sum,book)=>sum+Number(book.rating),0)/rated.length).toFixed(1):"—";
+  document.getElementById("root").innerHTML=`
+    <header class="hero"><div class="logo" aria-hidden="true">📖</div><div><h1>${escapeHtml(owner)}'s Library</h1><p>A read-only collection shared via BookDex</p></div></header>
+    <section class="stats" aria-label="Library statistics">
+      <div class="stat"><span>Books</span><b>${books.length}</b></div>
+      <div class="stat"><span>Completed</span><b>${completed.length}</b></div>
+      <div class="stat"><span>Pages read</span><b>${number(completed.reduce((sum,book)=>sum+(Number(book.pages)||0),0))}</b></div>
+      <div class="stat"><span>Average rating</span><b>${average}</b></div>
+    </section>
+    <section class="controls" aria-label="Filter library">
+      <input id="q" type="search" placeholder="Search by title, author, or genre…" aria-label="Search books">
+      <div class="chips">${["All",...STATUSES].map(status=>`<button type="button" class="chip${status===filter?" on":""}" data-filter="${escapeHtml(status)}">${escapeHtml(status)}</button>`).join("")}</div>
+    </section>
+    <p class="count" id="count" aria-live="polite"></p>
+    <section class="grid" id="grid" aria-label="Books"></section>
+    <footer>Made with BookDex 📖</footer>`;
+  document.getElementById("q").addEventListener("input",event=>{query=event.target.value;renderGrid();});
+  document.querySelectorAll(".chip").forEach(button=>button.addEventListener("click",()=>{
+    filter=button.dataset.filter;
+    document.querySelectorAll(".chip").forEach(chip=>chip.classList.toggle("on",chip===button));
+    renderGrid();
+  }));
+  renderGrid();
+}
+
+function cover(book){
+  const url=safeUrl(book.coverUrl);
+  if(url)return `<img src="${escapeHtml(url)}" alt="" loading="lazy" referrerpolicy="no-referrer">`;
+  return `<div class="placeholder"><b>${escapeHtml(book.title)}</b><span>${escapeHtml(book.author)}</span></div>`;
+}
+
+function renderGrid(){
+  const needle=query.trim().toLowerCase();
+  const filtered=books.filter(book=>(filter==="All"||book.status===filter)&&
+    (!needle||[book.title,book.author,book.genre].some(value=>String(value||"").toLowerCase().includes(needle))));
+  document.getElementById("count").textContent=`${filtered.length} book${filtered.length===1?"":"s"}`;
+  const grid=document.getElementById("grid");
+  if(!filtered.length){grid.innerHTML='<div class="empty">No books found 📚</div>';return;}
+  grid.innerHTML=filtered.map(book=>{
+    const pct=progress(book);
+    const badgeClass=book.status==="Completed"?"completed":book.status==="On Hold"?"hold":book.status==="Dropped"?"dropped":"";
+    return `<article class="card" data-id="${escapeHtml(book.id)}" tabindex="0" role="button" aria-label="View ${escapeHtml(book.title)}">
+      <div class="cover">${cover(book)}<span class="badge ${badgeClass}">${escapeHtml(book.status)}</span></div>
+      <div class="info"><h2 class="book-title">${escapeHtml(book.title)}</h2><p class="author">${escapeHtml(book.author)}</p>
+      ${book.status!=="Plan to Read"?`<div class="progress"><i style="width:${pct}%"></i></div><div class="progress-label"><span>${pct}%</span><span>${number(book.currentPage)} / ${number(book.pages)||"?"} pp</span></div>`:""}
+      <div class="meta"><span class="genre">${escapeHtml(book.genre||"—")}</span>${Number(book.rating)>0?`<span class="rating">★ ${escapeHtml(book.rating)}/10</span>`:""}</div></div>
+    </article>`;
+  }).join("");
+  grid.querySelectorAll(".card").forEach(card=>{
+    card.addEventListener("click",()=>openBook(card.dataset.id));
+    card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();openBook(card.dataset.id);}});
+  });
+}
+
+function openBook(id){
+  const book=books.find(item=>String(item.id)===String(id));
+  if(!book)return;
+  const pct=progress(book);
+  const url=safeUrl(book.coverUrl);
+  const rating=Number(book.rating)||0;
+  const overlay=document.createElement("div");
+  overlay.className="overlay";
+  overlay.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(book.title)}">
+    <button type="button" class="close" aria-label="Close">×</button>
+    <div class="modal-head"><div class="modal-cover">${url?`<img src="${escapeHtml(url)}" alt="" referrerpolicy="no-referrer">`:`<div class="placeholder"><b>${escapeHtml(book.title)}</b></div>`}</div>
+      <div class="modal-content"><h2>${escapeHtml(book.title)}</h2><p class="author">by ${escapeHtml(book.author)}</p>
+        <div class="meta"><span class="genre">${escapeHtml(book.genre||"—")}</span><span>${escapeHtml(book.status)}</span></div>
+        <div class="facts"><div><span>Pages</span><b>${number(book.pages)||"—"}</b></div><div><span>Progress</span><b>${number(book.currentPage)} / ${number(book.pages)||"?"}</b></div>
+        ${book.startDate?`<div><span>Started</span><b>${escapeHtml(book.startDate)}</b></div>`:""}${book.finishDate?`<div><span>Finished</span><b>${escapeHtml(book.finishDate)}</b></div>`:""}</div>
+      </div>
+    </div><div class="modal-body">
+      <section class="section"><h3>Reading progress</h3><div class="progress"><i style="width:${pct}%"></i></div><p class="progress-label"><span>${number(book.currentPage)} pages read</span><span>${pct}%</span></p></section>
+      <section class="section"><h3>Personal rating</h3><div class="stars" aria-label="${rating} out of 10">${Array.from({length:10},(_,i)=>`<span class="${i<rating?"":"off"}">★</span>`).join("")}</div>${rating?`<b>${rating}/10</b>`:"<span>Not rated yet</span>"}</section>
+      ${book.description?`<section class="section"><h3>Description</h3><p class="description">${escapeHtml(book.description)}</p></section>`:""}
+      ${book.notes?`<section class="section"><h3>Notes</h3><div class="notes">${escapeHtml(book.notes)}</div></section>`:""}
+    </div></div>`;
+  const close=()=>{overlay.remove();document.removeEventListener("keydown",onKey);};
+  const onKey=event=>{if(event.key==="Escape")close();};
+  overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
+  overlay.querySelector(".close").addEventListener("click",close);
+  document.addEventListener("keydown",onKey);
+  document.body.appendChild(overlay);
+  overlay.querySelector(".close").focus();
+}
+
+init();
+</script>
+</body>
+</html>
