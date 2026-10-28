@@ -44,8 +44,10 @@ h1{font-size:clamp(28px,5vw,42px);font-weight:900;line-height:1.1}
 .progress{height:6px;border-radius:8px;background:rgba(124,58,237,.12);margin:11px 0 4px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--lavender),var(--purple))}
 .progress-label{display:flex;justify-content:space-between;color:var(--text3);font-size:11px;font-weight:700}
 .meta{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:12px;font-weight:700}
-.genre{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:15px;background:rgba(124,58,237,.1);color:var(--purple);padding:3px 9px}
-.rating{color:#b8860b;white-space:nowrap}
+.genre{display:inline-flex;align-items:center;overflow:hidden;border-radius:15px;background:rgba(124,58,237,.1);color:var(--purple);padding:3px 9px;max-width:calc(100% - 52px);flex:1;min-width:0;position:relative}
+.genre-text{display:inline-block;white-space:nowrap;min-width:100%;animation:genre-scroll 7s ease-in-out infinite alternate;will-change:transform}
+.rating{color:#b8860b;white-space:nowrap;flex-shrink:0}
+@keyframes genre-scroll{0%,15%{transform:translateX(0)}45%,55%{transform:translateX(-28%)}85%,100%{transform:translateX(0)}}
 .empty,.state{grid-column:1/-1;text-align:center;padding:64px 16px;color:var(--text2)}
 footer{text-align:center;margin-top:40px;color:var(--text3);font-size:13px;font-weight:700}
 .overlay{position:fixed;inset:0;z-index:5;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:28px 16px;background:rgba(51,47,58,.45);backdrop-filter:blur(8px)}
@@ -146,7 +148,7 @@ function renderGrid(){
       <div class="cover">${cover(book)}<span class="badge ${badgeClass}">${escapeHtml(book.status)}</span></div>
       <div class="info"><h2 class="book-title">${escapeHtml(book.title)}</h2><p class="author">${escapeHtml(book.author)}</p>
       ${book.status!=="Plan to Read"?`<div class="progress"><i style="width:${pct}%"></i></div><div class="progress-label"><span>${pct}%</span><span>${number(book.currentPage)} / ${number(book.pages)||"?"} pp</span></div>`:""}
-      <div class="meta"><span class="genre">${escapeHtml(book.genre||"—")}</span>${Number(book.rating)>0?`<span class="rating">★ ${escapeHtml(book.rating)}/10</span>`:""}</div></div>
+      <div class="meta"><span class="genre"><span class="genre-text">${escapeHtml(book.genre||"—")}</span></span>${Number(book.rating)>0?`<span class="rating">★ ${escapeHtml(book.rating)}/10</span>`:""}</div></div>
     </article>`;
   }).join("");
   grid.querySelectorAll(".card").forEach(card=>{
