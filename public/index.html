@@ -132,9 +132,9 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:va
 .progress-text{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-weight:600}
 .book-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
 .book-card .book-genre{display:inline-flex;align-items:center;max-width:calc(100% - 52px);font-size:11px;color:var(--purple);background:rgba(124,58,237,0.1);padding:3px 10px;border-radius:20px;font-weight:700;overflow:hidden;flex:1;min-width:0;position:relative}
-.book-card .book-genre-text{display:inline-block;white-space:nowrap;min-width:100%;animation:genre-scroll 6s ease-in-out infinite alternate}
+.book-card .book-genre-text{display:inline-block;white-space:nowrap;min-width:100%;animation:genre-scroll 3s linear infinite}
 .book-card .book-rating{display:inline-flex;align-items:center;justify-content:flex-end;gap:3px;font-size:13px;color:#F59E0B;font-weight:700;white-space:nowrap;flex-shrink:0;margin-left:auto}
-@keyframes genre-scroll{0%{transform:translateX(0)}10%{transform:translateX(0)}50%{transform:translateX(-46%)}100%{transform:translateX(-46%)}}
+@keyframes genre-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* ── Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(51,47,58,0.45);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;overflow-y:auto}
