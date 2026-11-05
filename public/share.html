@@ -179,11 +179,12 @@ function openBook(id){
       ${book.description?`<section class="section"><h3>Description</h3><p class="description">${escapeHtml(book.description)}</p></section>`:""}
       ${book.notes?`<section class="section"><h3>Notes</h3><div class="notes">${escapeHtml(book.notes)}</div></section>`:""}
     </div></div>`;
-  const close=()=>{overlay.remove();document.removeEventListener("keydown",onKey);};
+  const close=()=>{overlay.remove();document.removeEventListener("keydown",onKey);document.body.style.overflow="";};
   const onKey=event=>{if(event.key==="Escape")close();};
   overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
   overlay.querySelector(".close").addEventListener("click",close);
   document.addEventListener("keydown",onKey);
+  document.body.style.overflow="hidden";
   document.body.appendChild(overlay);
   overlay.querySelector(".close").focus();
 }

@@ -765,10 +765,14 @@ function openDetail(id){
   overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
   document.body.appendChild(overlay);
   document.body._modal=overlay;
+  document.body.style.overflow="hidden";
   setTimeout(()=>{const el=document.getElementById("mpb");if(el)el.style.width=pct+"%";},120);
 }
 
-function closeModal(){if(document.body._modal){document.body._modal.remove();document.body._modal=null;}}
+function closeModal(){
+  if(document.body._modal){document.body._modal.remove();document.body._modal=null;}
+  document.body.style.overflow="";
+}
 
 /* ===== SHARE ===== */
 async function openShare(){
@@ -805,6 +809,7 @@ function renderShareModal(shareToken){
   overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
   document.body.appendChild(overlay);
   document.body._modal=overlay;
+  document.body.style.overflow="hidden";
   if(shareToken)overlay.querySelector("#share-link").value=link;
 }
 
@@ -850,6 +855,7 @@ function confirmDelete(id){
   overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
   document.body.appendChild(overlay);
   document.body._modal=overlay;
+  document.body.style.overflow="hidden";
 }
 
 async function deleteBook(id){
@@ -903,6 +909,7 @@ function openBookForm(book){
   overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
   document.body.appendChild(overlay);
   document.body._modal=overlay;
+  document.body.style.overflow="hidden";
 }
 
 async function saveBook(editId){
