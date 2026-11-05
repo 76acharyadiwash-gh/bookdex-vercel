@@ -143,9 +143,9 @@ Open `http://localhost:3000`
 
 If your Supabase project is inactive for a long period, it may be paused automatically. To prevent that without upgrading, keep the project active with a small scheduled heartbeat.
 
-This repo now includes a Vercel cron endpoint at `/api/keepalive` that runs every 6 hours and executes a lightweight query against Supabase. In Vercel, add the same `CRON_SECRET` value to your project environment variables and the cron will run automatically.
+This repo includes a lightweight `/api/keepalive` endpoint that executes a tiny query against Supabase. The recommended fallback is a GitHub Actions workflow, which can run on a daily or custom schedule without depending on Vercel Cron limits.
 
-You can also trigger it manually:
+You can trigger it manually:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" https://your-vercel-app.vercel.app/api/keepalive
