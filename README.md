@@ -128,6 +128,7 @@ Create a `.env` file:
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SERVICE_KEY=your_service_role_key
 JWT_SECRET=your_secret_key
+CRON_SECRET=your_random_secret
 ```
 
 ```bash
@@ -135,6 +136,20 @@ npx vercel dev
 ```
 
 Open `http://localhost:3000`
+
+---
+
+## Keep the Supabase project active on the free tier
+
+If your Supabase project is inactive for a long period, it may be paused automatically. To prevent that without upgrading, keep the project active with a small scheduled heartbeat.
+
+This repo now includes a Vercel cron endpoint at `/api/keepalive` that runs every 6 hours and executes a lightweight query against Supabase. In Vercel, add the same `CRON_SECRET` value to your project environment variables and the cron will run automatically.
+
+You can also trigger it manually:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-vercel-app.vercel.app/api/keepalive
+```
 
 ---
 

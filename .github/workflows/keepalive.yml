@@ -1,0 +1,23 @@
+name: Keep Supabase active
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call BookDex keepalive endpoint
+        env:
+          APP_URL: ${{ secrets.BOOKDEX_APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "Missing BOOKDEX_APP_URL or CRON_SECRET secret"
+            exit 1
+          fi
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/keepalive"
